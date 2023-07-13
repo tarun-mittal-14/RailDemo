@@ -1,30 +1,31 @@
-class RecruitersController < ApplicationController
- skip_before_action :authenticate_recruiter,  only:[:create, :login]
- skip_before_action :authenticate_seeker
+  class RecruitersController < ApplicationController
+   skip_before_action :authenticate_recruiter,  only:[:create, :login]
+   skip_before_action :authenticate_seeker
 
-   def create
-    recruiter = Recruiter.new(recruter_params)
-    if recruiter.save
-      render json: recruiter
-    else 
-      render json: recruiter.errors.full_messages
+     def create
+      recruiter = Recruiter.new(recruter_params)
+      if recruiter.save
+        render json: recruiter
+      else 
+        render json: recruiter.errors.full_messages
+      end
     end
-  end
 
-  def index
-    recruiters = Recruiter.all
-    render json: recruiters
-  end
+    def index
+      recruiters = Recruiter.all
+      render json: recruiters
+    end
 
-  def show
-    recruiter = Recruiter.find(params[:id])
-    render json: recruiter
-    rescue ActiveRecord::RecordNotFound 
+    def show
+      recruiter = Recruiter.find(params[:id])
+      render json: recruiter
+      rescue ActiveRecord::RecordNotFound 
      render json: {message: "this id is not available"}
-  end 
+   end 
 
 
-  def login 
+   def login 
+    puts "login recruiter"
     recruiter = Recruiter.find_by(email: params[:email],password: params[:password])
     if recruiter 
       token = jwt_encode(recruiter_id: recruiter.id)
@@ -45,8 +46,17 @@ class RecruitersController < ApplicationController
   end
 
   def view_all_jobs
+    puts "view jobs"
     job = @current_recruiter.jobs 
     render json: job
+  end
+
+  def update
+    recruiter = @current_recruiter
+    recruiter.update(recruter_params)
+    render json:recruiter  
+    rescue ActiveRecord::RecordNotFound 
+    render json: {message: "There is no recruiter related to this id "} 
   end
 
   def job_update
@@ -56,12 +66,16 @@ class RecruitersController < ApplicationController
     rescue ActiveRecord::RecordNotFound 
     render json: {message: "There is no Job related to this id "} 
   end
-
+  
+  def view_applied_jobs
+    applied_jobs = JobSeeker.where(job_id: @current_recruiter.jobs.pluck(:id))
+    render json: applied_jobs
+  end
 
   def approve_applied_jobs
-    a = JobSeeker.find_by(id: params[:id])
-    a.update(status: "approved")
-    render json: a
+    approve_jobs = JobSeeker.find(params[:id])
+    approve_jobs.update(status: "approved")
+    render json: approve_jobs
     rescue ActiveRecord::RecordNotFound 
     render json: {message: "There is no Job related to this id "}
   end
@@ -74,7 +88,7 @@ class RecruitersController < ApplicationController
     render json: {message: "There is no Job related to this id "}
   end
 
-  
+
   private
 
   def set_job
@@ -90,9 +104,9 @@ class RecruitersController < ApplicationController
   end
 
   def recruter_params
-    params.permit(:name, :email, :password, :age, :experience, :qualification, :type)
+    params.permit(:name, :email, :password, :age, :experience, :qualification, :type, :image)
   end
-  
+
 end
 
 

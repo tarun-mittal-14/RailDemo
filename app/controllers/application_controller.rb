@@ -1,10 +1,19 @@
 class ApplicationController < ActionController::API
+
+  
 	include JsonWebToken
+
+  before_action do
+    ActiveStorage::Current.url_options = { protocol: request.protocol, host: request.host, port: request.port }
+  end
+    
   before_action :authenticate_recruiter
-    before_action :authenticate_seeker
+  before_action :authenticate_seeker
 
   private
+
   def authenticate_recruiter
+    puts "authenticate_recruiter"
     header = request.headers["Authorization"]
     header = header.split(" ").last if header
     decoded = jwt_decode(header)
@@ -12,6 +21,7 @@ class ApplicationController < ActionController::API
   end
 
   def authenticate_seeker
+    puts "authenticate_seeker"
     header = request.headers["Authorization"]
     header = header.split(" ").last if header
     decoded = jwt_decode(header)

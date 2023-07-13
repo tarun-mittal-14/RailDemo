@@ -25,6 +25,15 @@ class SeekersController < ApplicationController
     end
   end
 
+
+  def update
+    seeker = @current_seeker
+    seeker.update(seeker_params)
+    render json:seeker  
+    rescue ActiveRecord::RecordNotFound 
+    render json: {message: "There is no seeker related to this id "} 
+  end
+
   def login 
     seeker = Seeker.find_by(email: params[:email],password: params[:password])
     if seeker 
@@ -33,6 +42,12 @@ class SeekersController < ApplicationController
     else
       render json: {error: "unauthorized access "}
     end
+  end
+
+  def search_job
+    job = Job.where("title LIKE '%#{params[:title].strip}%'")
+    return render json: job unless job.nil?
+    render json: {message: "there is no job with this title"}
   end
 
   def apply_for_job
@@ -46,9 +61,8 @@ class SeekersController < ApplicationController
   end
 
   def view_applied_jobs
-  	a = JobSeeker.find(params[:id])
-  	a.job
-    render json: a
+    applied_jobs = JobSeeker.where(user_id: params[:id])
+    render json: applied_jobs
     rescue ActiveRecord::RecordNotFound 
     render json: {message: "there is no job associated with thid id"}
 
@@ -62,6 +76,6 @@ class SeekersController < ApplicationController
 
 
  def seeker_params
-  params.permit(:name, :email, :password, :age, :experience, :qualification, :type)
+  params.permit(:name, :email, :password, :age, :experience, :qualification, :type, :image)
 end
 end
