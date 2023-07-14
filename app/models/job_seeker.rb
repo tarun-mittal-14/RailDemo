@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 class JobSeeker < ApplicationRecord
   belongs_to :user
   belongs_to :job
 
-  # before_save :apply  
+  # before_save :apply
 
   validates :status, presence: true
-  enum :status, [:approved, :rejected, :applied]
+  enum :status, %i[approved rejected applied]
 
   # def apply
   #   self.status = "applied"
