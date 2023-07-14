@@ -1,4 +1,4 @@
-  class RecruitersController < ApplicationController
+    class RecruitersController < ApplicationController
    skip_before_action :authenticate_recruiter,  only:[:create, :login]
    skip_before_action :authenticate_seeker
 
@@ -74,10 +74,28 @@
 
   def approve_applied_jobs
     approve_jobs = JobSeeker.find(params[:id])
-    approve_jobs.update(status: "approved")
+    approve_jobs.approved!
     render json: approve_jobs
     rescue ActiveRecord::RecordNotFound 
     render json: {message: "There is no Job related to this id "}
+  end
+  
+  def view_approved_jobs
+    view_approved = JobSeeker.approved
+    render json: view_approved
+  end
+
+  def reject_applied_jobs
+    reject_jobs = JobSeeker.find(params[:id])
+    reject_jobs.rejected!
+    render json: reject_jobs
+    rescue ActiveRecord::RecordNotFound 
+    render json: {message: "There is no Job related to this id "}
+  end
+
+  def view_rejected_jobs
+    view_rejected = JobSeeker.approved
+    render json: view_rejected
   end
 
   def job_delete
@@ -100,7 +118,7 @@
   end
 
   def job_params
-    params.permit(:title, :description , :location, :requirements, :user_id)
+    params.permit(:title, :description , :location, :requirement, :user_id)
   end
 
   def recruter_params
