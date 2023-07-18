@@ -1,25 +1,27 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  post 'seekers/login', to: 'seekers#login'
+  # post 'seekers/login', to: 'seekers#login'
   get 'seekers/search/job', to: 'seekers#search_job'
+  get 'seekers/view/job', to: 'seekers#view_jobs'
   post 'seekers/apply/job', to: 'seekers#apply_for_job'
-  post 'seekers/view/applied/jobs', to: 'seekers#view_applied_jobs'
+  get 'seekers/view/applied/jobs', to: 'seekers#view_applied_jobs'
 
   resources :seekers
 
-  post 'recruiters/login', to: 'recruiters#login'
-  post 'recruiters/create/job', to: 'recruiters#create_jobs'
-  post 'recruiters/view/job', to: 'recruiters#view_all_jobs'
-  patch 'recruiters/update/job/:id', to: 'recruiters#job_update'
-  delete 'recruiters/delete/job/:id', to: 'recruiters#job_delete'
-  get 'recruiters/view/applied/jobs', to: 'recruiters#view_applied_jobs'
-  patch 'recruiters/approve/applied/jobs', to: 'recruiters#approve_applied_jobs'
-  get 'recruiters/view/approved/jobs', to: 'recruiters#view_approved_jobs'
-  patch 'recruiters/reject/applied/jobs', to: 'recruiters#reject_applied_jobs'
-  get 'recruiters/view/rejected/jobs', to: 'recruiters#view_rejected_jobs'
-
+  post 'users/login', to: 'users#login'
+  # post 'recruiters/login', to: 'recruiters#login'
   resources :recruiters
+
+  post 'jobs/create/job', to: 'jobs#create_jobs'
+  post 'jobs/view/job', to: 'jobs#view_all_jobs'
+  patch 'jobs/update/job/:id', to: 'jobs#job_update'
+  delete 'jobs/delete/job/:id', to: 'jobs#job_delete'
+  get 'jobs/view/applied/jobs', to: 'jobs#view_applied_jobs'
+  patch 'jobs/approve/applied/jobs', to: 'jobs#approve_applied_jobs'
+  get 'jobs/view/approved/jobs', to: 'jobs#view_approved_jobs'
+  patch 'jobs/reject/applied/jobs', to: 'jobs#reject_applied_jobs'
+  get 'jobs/view/rejected/jobs', to: 'jobs#view_rejected_jobs'
 
   # resources :jobs
 

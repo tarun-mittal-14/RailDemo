@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ApplicationController < ActionController::API
   include JsonWebToken
 
@@ -7,24 +5,15 @@ class ApplicationController < ActionController::API
     ActiveStorage::Current.url_options = { protocol: request.protocol, host: request.host, port: request.port }
   end
 
-  before_action :authenticate_recruiter
-  before_action :authenticate_seeker
+  before_action :authenticate_user
 
   private
 
-  def authenticate_recruiter
-    puts 'authenticate_recruiter'
+  def authenticate_user
+    puts 'authenticate_user'
     header = request.headers['Authorization']
     header = header.split(' ').last if header
     decoded = jwt_decode(header)
-    @current_recruiter = User.find(decoded[:recruiter_id])
-  end
-
-  def authenticate_seeker
-    puts 'authenticate_seeker'
-    header = request.headers['Authorization']
-    header = header.split(' ').last if header
-    decoded = jwt_decode(header)
-    @current_seeker = User.find(decoded[:seeker_id])
+    @current_user = User.find(decoded[:user_id])
   end
 end
