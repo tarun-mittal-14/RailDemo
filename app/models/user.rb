@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   has_many :job_seekers
   has_many :jobs
@@ -12,4 +14,12 @@ class User < ApplicationRecord
   validates :email, uniqueness: { message: 'Email is already exist' },
                     format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i,
                               message: '%<value>s not a valid email !!!' }
+
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[age created_at email experience id name password qualification type updated_at]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[image_attachment image_blob job_seekers jobs]
+  end
 end

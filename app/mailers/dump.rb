@@ -56,3 +56,6 @@
 
 # before_action :authenticate_recruiter
 # before_action :authenticate_seeker
+
+# validates :title, :description, :location, format: { with: /\A[a-zA-Z]+(?: [a-zA-Z]+)?\z/,
+# message: 'only letters are allowed ' }

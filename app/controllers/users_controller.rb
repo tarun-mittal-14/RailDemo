@@ -1,5 +1,5 @@
-class UsersController < ApplicationController
-  skip_before_action :authenticate_user, only: [:login]
+class UsersController < ApiController
+  skip_before_action :authenticate_user
 
   def login
     user = User.find_by(email: params[:email], password: params[:password])

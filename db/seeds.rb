@@ -36,3 +36,7 @@ JobSeeker.create(user_id: 5, job_id: 1, status: 'applied')
 JobSeeker.create(user_id: 5, job_id: 4, status: 'applied')
 JobSeeker.create(user_id: 5, job_id: 2, status: 'applied')
 JobSeeker.create(user_id: 5, job_id: 3, status: 'applied')
+if Rails.env.development?
+  AdminUser.create!(email: 'admin@example.com', password: 'password',
+                    password_confirmation: 'password')
+end

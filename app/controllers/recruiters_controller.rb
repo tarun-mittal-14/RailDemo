@@ -1,4 +1,4 @@
-class RecruitersController < ApplicationController
+class RecruitersController < ApiController
   skip_before_action :authenticate_user, only: [:create]
   before_action :check_recruiter, except: [:create]
 
@@ -11,16 +11,13 @@ class RecruitersController < ApplicationController
     end
   end
 
-  def index
+  def show
     render json: @current_user
   end
 
   def update
-    recruiter = @current_user
-    recruiter.update(recruiter_params)
-    render json: recruiter
-  rescue ActiveRecord::RecordNotFound
-    render json: { message: 'There is no recruiter related to this id ' }
+    @current_user.update(recruiter_params)
+    render json: { message: 'successfully updated' }
   end
 
   private

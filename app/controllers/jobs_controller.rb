@@ -1,16 +1,13 @@
-class JobsController < ApplicationController
+class JobsController < ApiController
   before_action :check_recruiter
 
   def create_jobs
-    # if @current_user.type == "recruiter"
-    if (job = @current_user.jobs.create(job_params))
+    job = @current_user.jobs.new(job_params)
+    if job.save?
       render json: job
     else
       render json: job.errors.full_messages
     end
-    # else
-    #   render json: {mes}
-    # end
   end
 
   def view_all_jobs
@@ -18,7 +15,7 @@ class JobsController < ApplicationController
     render json: jobs
   end
 
-  def job_update
+  def update
     job = @current_user.jobs.find(params[:id])
     job.update(job_params)
     render json: job
@@ -26,25 +23,30 @@ class JobsController < ApplicationController
     render json: { message: 'There is no Job related to this id ' }
   end
 
-  def view_applied_jobs
-    applied_jobs = JobSeeker.where(job_id: @current_user.jobs.pluck(:id))
+  def view_job_applications
+    applied_jobs = JobSeeker.where(job_id: @current_user.jobs.ids)
     render json: applied_jobs
   end
 
-  def approve_applied_jobs
-    approve_jobs = JobSeeker.find(params[:id])
-    approve_jobs.approved!
-    render json: approve_jobs
+  def approve_job_applications
+     approve_jobs = @current_user.jobs.find_by(job_id: params[:id]).job_seekers.find_by(params[:id])
+     if approve_jobs.present?
+      approve_jobs.approved!
+    # approve_jobs.update
+      render json: approve_jobs
+      else 
+        render json: {message: "You are not owner of this job"}
+      end  
   rescue ActiveRecord::RecordNotFound
     render json: { message: 'There is no Job related to this id ' }
   end
 
-  def view_approved_jobs
+  def view_approved_job_applications
     view_approved = JobSeeker.approved
     render json: view_approved
   end
 
-  def reject_applied_jobs
+  def reject_job_applications
     reject_jobs = JobSeeker.find(params[:id])
     reject_jobs.rejected!
     render json: reject_jobs
@@ -52,8 +54,8 @@ class JobsController < ApplicationController
     render json: { message: 'There is no Job related to this id ' }
   end
 
-  def view_rejected_jobs
-    view_rejected = JobSeeker.approved
+  def view_rejected_job_applications
+    view_rejected = JobSeeker.rejected
     render json: view_rejected
   end
 

@@ -1,4 +1,4 @@
-class SeekersController < ApplicationController
+class SeekersController < ApiController
   skip_before_action :authenticate_user, only: [:create]
   before_action :check_seeker, except: [:create]
 
@@ -11,16 +11,13 @@ class SeekersController < ApplicationController
     end
   end
 
-  def index
+  def show
     render json: @current_user
   end
 
   def update
-    seeker = @current_user
-    seeker.update(seeker_params)
-    render json: seeker
-  rescue ActiveRecord::RecordNotFound
-    render json: { message: 'There is no seeker related to this id ' }
+    @current_user.update(seeker_params)
+    render json: { message: 'successfully updated' }
   end
 
   def search_job
@@ -36,7 +33,7 @@ class SeekersController < ApplicationController
   end
 
   def apply_for_job
-    seeker = JobSeeker.new(apply_job)
+    seeker = @current_user.job_seekers.new(job_id: params[:id], status: 'applied')
     if seeker.save
       render json: { message: 'Applied successful' }
     else
@@ -45,10 +42,8 @@ class SeekersController < ApplicationController
   end
 
   def view_applied_jobs
-    applied_jobs = JobSeeker.where(user_id: params[:id])
+    applied_jobs = @current_user.job_seekers
     render json: applied_jobs
-  rescue ActiveRecord::RecordNotFound
-    render json: { message: 'there is no job associated with thid id' }
   end
 
   private
@@ -57,15 +52,12 @@ class SeekersController < ApplicationController
     params.permit(:name, :email, :password, :age, :experience, :qualification, :image)
   end
 
-  def apply_job
-    params.permit(:user_id, :job_id, :status)
-  end
-
   def check_seeker
     if @current_user.type == 'Seeker'
-      # render json: { message: 'welcome' }
+    # render json: { message: 'welcome' }
     else
       render json: { message: 'you are not authorized' }
     end
   end
+
 end
