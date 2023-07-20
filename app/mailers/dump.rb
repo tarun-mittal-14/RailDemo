@@ -59,3 +59,8 @@
 
 # validates :title, :description, :location, format: { with: /\A[a-zA-Z]+(?: [a-zA-Z]+)?\z/,
 # message: 'only letters are allowed ' }
+  # enum :status, %w[approved rejected applied]
+
+  # STATUS_OPTIONS = %w(approved rejected applied)
+
+  # validates :status, :inclusion => {:in => STATUS_OPTIONS}

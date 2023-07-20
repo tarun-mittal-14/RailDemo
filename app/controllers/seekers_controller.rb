@@ -23,7 +23,7 @@ class SeekersController < ApiController
   def search_job
     job = Job.where("title LIKE '%#{params[:title].strip}%'")
     return render json: job unless job.nil?
-
+  else 
     render json: { message: 'there is no job with this title' }
   end
 

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Recruiter < User
   def self.ransackable_attributes(_auth_object = nil)
     %w[age created_at email experience id name password qualification type updated_at]

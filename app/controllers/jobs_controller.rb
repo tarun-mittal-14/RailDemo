@@ -29,16 +29,13 @@ class JobsController < ApiController
   end
 
   def approve_job_applications
-     approve_jobs = @current_user.jobs.find_by(job_id: params[:id]).job_seekers.find_by(params[:id])
-     if approve_jobs.present?
+     approve_jobs = @current_user.jobs.find_by(id: params[:job_id]).job_seekers.find_by(params[:id])
+    if approve_jobs.present?
       approve_jobs.approved!
-    # approve_jobs.update
       render json: approve_jobs
-      else 
-        render json: {message: "You are not owner of this job"}
-      end  
-  rescue ActiveRecord::RecordNotFound
-    render json: { message: 'There is no Job related to this id ' }
+    else  
+      render json: {message: "You are not owner of this job"}
+    end  
   end
 
   def view_approved_job_applications
@@ -47,12 +44,14 @@ class JobsController < ApiController
   end
 
   def reject_job_applications
-    reject_jobs = JobSeeker.find(params[:id])
-    reject_jobs.rejected!
-    render json: reject_jobs
-  rescue ActiveRecord::RecordNotFound
-    render json: { message: 'There is no Job related to this id ' }
-  end
+    reject_jobs = @current_user.jobs.find_by(id: params[:job_id]).job_seekers.find_by(params[:id])
+    if reject_jobs.present?
+      reject_jobs.rejected!
+      render json: reject_jobs
+    else  
+        render json: {message: "You are not owner of this job"}
+    end 
+  end 
 
   def view_rejected_job_applications
     view_rejected = JobSeeker.rejected
@@ -69,9 +68,9 @@ class JobsController < ApiController
 
   private
 
-  def set_job
-    Job.find(params[:id])
-  end
+  # def set_job
+  #   Job.find(params[:id])
+  # end
 
   def view_all_jobs_params
     params.permit(:user_id)
