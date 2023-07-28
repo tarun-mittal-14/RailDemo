@@ -1,6 +1,6 @@
 class JobsController < ApiController
-  before_action :check_recruiter
-
+  load_and_authorize_resource
+  
   def create_jobs
     job = @current_user.jobs.new(job_params)
     if job.save?
@@ -19,8 +19,6 @@ class JobsController < ApiController
     job = @current_user.jobs.find(params[:id])
     job.update(job_params)
     render json: job
-  rescue ActiveRecord::RecordNotFound
-    render json: { message: 'There is no Job related to this id ' }
   end
 
   def view_job_applications
@@ -29,62 +27,49 @@ class JobsController < ApiController
   end
 
   def approve_job_applications
-     approve_jobs = @current_user.jobs.find_by(id: params[:job_id]).job_seekers.find_by(params[:id])
-    if approve_jobs.present?
-      approve_jobs.approved!
-      render json: approve_jobs
-    else  
-      render json: {message: "You are not owner of this job"}
-    end  
-  end
+   approve_jobs = @current_user.jobs.find_by(id: params[:job_id]).job_seekers.find_by(params[:id])
+   if approve_jobs.present?
+    approve_jobs.approved!
+    render json: approve_jobs
+  else  
+    render json: {message: "You are not owner of this job"}
+  end  
+end
 
-  def view_approved_job_applications
-    view_approved = JobSeeker.approved
-    render json: view_approved
-  end
+def view_approved_job_applications
+  view_approved = JobSeeker.approved
+  render json: view_approved
+end
 
-  def reject_job_applications
-    reject_jobs = @current_user.jobs.find_by(id: params[:job_id]).job_seekers.find_by(params[:id])
-    if reject_jobs.present?
-      reject_jobs.rejected!
-      render json: reject_jobs
-    else  
-        render json: {message: "You are not owner of this job"}
-    end 
+def reject_job_applications
+  reject_jobs = @current_user.jobs.find_by(id: params[:job_id]).job_seekers.find_by(params[:id])
+  if reject_jobs.present?
+    reject_jobs.rejected!
+    render json: reject_jobs
+  else  
+    render json: {message: "You are not owner of this job"}
   end 
+end 
 
-  def view_rejected_job_applications
-    view_rejected = JobSeeker.rejected
-    render json: view_rejected
-  end
+def view_rejected_job_applications
+  view_rejected = JobSeeker.rejected
+  render json: view_rejected
+end
 
-  def job_delete
-    job = @current_user.jobs.find(params[:id])
-    job.destroy
-    render json: { message: 'Job has been deleted' }
-  rescue ActiveRecord::RecordNotFound
-    render json: { message: 'There is no Job related to this id ' }
-  end
+def job_delete
+  job = @current_user.jobs.find(params[:id])
+  job.destroy
+  render json: { message: 'Job has been deleted' }
+  
+end
 
-  private
+private
 
-  # def set_job
-  #   Job.find(params[:id])
-  # end
+def view_all_jobs_params
+  params.permit(:user_id)
+end
 
-  def view_all_jobs_params
-    params.permit(:user_id)
-  end
-
-  def job_params
-    params.permit(:title, :description, :location, :requirement, :user_id)
-  end
-
-  def check_recruiter
-    if @current_user.type == 'Recruiter'
-      # render json: { message: 'welcome' }
-    else
-      render json: { message: 'you are not authorized' }
-    end
-  end
+def job_params
+  params.permit(:title, :description, :location, :requirement, :user_id)
+end
 end

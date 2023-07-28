@@ -1,6 +1,6 @@
 class SeekersController < ApiController
   skip_before_action :authenticate_user, only: [:create]
-  before_action :check_seeker, except: [:create]
+  load_and_authorize_resource except: [:create]
 
   def create
     seeker = Seeker.new(seeker_params)
@@ -22,8 +22,7 @@ class SeekersController < ApiController
 
   def search_job
     job = Job.where("title LIKE '%#{params[:title].strip}%'")
-    return render json: job unless job.nil?
-  else 
+    return render json: job unless job.empty?
     render json: { message: 'there is no job with this title' }
   end
 
@@ -33,11 +32,11 @@ class SeekersController < ApiController
   end
 
   def apply_for_job
-    seeker = @current_user.job_seekers.new(job_id: params[:id], status: 'applied')
+    seeker = @current_user.job_seekers.new(job_id: params[:job_id], status: 'applied')
     if seeker.save
       render json: { message: 'Applied successful' }
     else
-      render json: { message: 'Failed' }
+      render json: { message: 'There is no Job related to this id ' }
     end
   end
 
@@ -50,14 +49,6 @@ class SeekersController < ApiController
 
   def seeker_params
     params.permit(:name, :email, :password, :age, :experience, :qualification, :image)
-  end
-
-  def check_seeker
-    if @current_user.type == 'Seeker'
-    # render json: { message: 'welcome' }
-    else
-      render json: { message: 'you are not authorized' }
-    end
   end
 
 end

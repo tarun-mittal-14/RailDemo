@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  
   has_many :job_seekers
   has_many :jobs
 

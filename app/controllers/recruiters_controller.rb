@@ -1,6 +1,7 @@
 class RecruitersController < ApiController
   skip_before_action :authenticate_user, only: [:create]
-  before_action :check_recruiter, except: [:create]
+  load_and_authorize_resource except: [:create]
+
 
   def create
     recruiter = Recruiter.new(recruiter_params)
@@ -24,13 +25,5 @@ class RecruitersController < ApiController
 
   def recruiter_params
     params.permit(:name, :email, :password, :age, :experience, :qualification, :image)
-  end
-
-  def check_recruiter
-    if @current_user.type == 'Recruiter'
-      # render json: { message: 'welcome' }
-    else
-      render json: { message: 'you are not authorized' }
-    end
   end
 end

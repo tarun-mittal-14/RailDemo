@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   # post 'seekers/login', to: 'seekers#login'
   get 'seekers/search/job', to: 'seekers#search_job'
   get 'seekers/view/job', to: 'seekers#view_jobs'
-  post 'seekers/apply/job/:id', to: 'seekers#apply_for_job'
+  post 'seekers/apply/job/:job_id', to: 'seekers#apply_for_job'
   get 'seekers/view/applied/jobs', to: 'seekers#view_applied_jobs'
 
   resource :seekers
